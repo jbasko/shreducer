@@ -1,7 +1,12 @@
 from shreducers.grammar import Grammar
 
 
-class ArithmeticsG(Grammar):
+class PlusMinusArithmeticsG(Grammar):
+    """
+    Simple arithmetic expression parser that doesn't deal with multiplication and division
+    because they have precedence over addition and subtraction which complicates the grammar.
+    """
+
     class t:
         IDENT = None
         PLUS_MINUS = '+', '-'
@@ -37,33 +42,3 @@ class ArithmeticsG(Grammar):
     def negation(cls, types, (_, a)):
         # -1 is effectively "0 - 1"
         return [cls.t.EXPR], [('-', '0', a)]
-
-
-_p = ArithmeticsG.parse
-_s = ArithmeticsG.simple_parse
-
-
-def test_simple_arithmetics():
-    assert _p('2 + 3') == ([ArithmeticsG.t.EXPR], [('+', '2', '3')])
-    assert _s('2 - 3') == ('-', '2', '3')
-    assert _s('2 - 3 + 1') == ('+', ('-', '2', '3'), '1')
-
-
-def test_basic_parentheses():
-    assert _s('2 - (3 + 1)') == ('-', '2', ('+', '3', '1'))
-    assert _s('(2 - 3) + 1') == ('+', ('-', '2', '3'), '1')
-
-    assert _s('2 - (3 + (1 - 4))') == ('-', '2', ('+', '3', ('-', '1', '4')))
-    assert _s('((2 - 3) + 1) - 4') == ('-', ('+', ('-', '2', '3'), '1'), '4')
-
-
-def test_sign_before_identifier_and_expr():
-    assert _s('-2 + 3') == ('+', ('-', '0', '2'), '3')
-    assert _s('3 - -2') == ('-', '3', ('-', '0', '2'))
-
-    assert _s('(-2) + 3') == ('+', ('-', '0', '2'), '3')
-    assert _s('3 - (-2)') == ('-', '3', ('-', '0', '2'))
-
-    assert _s('- (2 + 3)') == ('-', '0', ('+', '2', '3'))
-
-    assert _s('- ( - (3 - 4))') == ('-', '0', ('-', '0', ('-', '3', '4')))

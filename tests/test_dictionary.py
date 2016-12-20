@@ -1,4 +1,4 @@
-from shreducers.examples.dict_grammar import DictG
+from shreducers.examples.dictionary import DictG
 
 
 def test_parses_dict_grammar():

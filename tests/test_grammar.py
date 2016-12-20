@@ -14,6 +14,7 @@ def test_grammar_t_members_are_names_of_token_types():
 def test_token_type_lookup_defaults_to_the_type():
     class MyGrammar(Grammar):
         class t:
+            EXPR = ()  # empty tuple denotes a concept of higher abstraction
             DIGIT = '0', '1'
             UNKNOWN = None
 

@@ -6,7 +6,7 @@ class DictG(Grammar):
         IDENT = None
         COLON = ':',
         COMMA = ',',
-        DICT = None
+        DICT = ()
 
     @classmethod
     def get_rules(cls):

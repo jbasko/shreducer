@@ -13,8 +13,13 @@ class GrammarMeta(type):
             for v in token_type_values or ():
                 token_type_lookup[v] = token_type
 
-            if not token_type_values and default_token_type is None:
-                # The first token type with no values is the default token type
+            # None denots default token type.
+            # For tokens of higher abstraction (expressions) use empty tuple.
+            if token_type_values is None:
+                if default_token_type:
+                    raise ValueError('More than one default token type declared: {} and {}'.format(
+                        default_token_type, token_type
+                    ))
                 default_token_type = token_type
 
             # Replace token_type value with the string so it can be used as a constant

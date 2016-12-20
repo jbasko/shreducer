@@ -1,9 +1,14 @@
+from shreducers import tokenizers
 from shreducers.parser import ShiftReduceParser
+from shreducers.tokenizers import EOF, EOF_VALUE
 
 
 class GrammarMeta(type):
     def __new__(meta, name, bases, dct):
-        token_type_lookup = {}
+        token_type_lookup = {
+            # Include EOF in all lookups
+            EOF_VALUE: EOF
+        }
         default_token_type = None
 
         for token_type, token_type_values in dct['t'].__dict__.iteritems():
@@ -28,9 +33,6 @@ class GrammarMeta(type):
         dct['_token_type_lookup'] = token_type_lookup
         dct['_default_token_type'] = default_token_type
 
-        # Must also fix rules because they refer to the wrong things!
-
-
         return super(GrammarMeta, meta).__new__(meta, name, bases, dct)
 
 
@@ -49,12 +51,20 @@ class Grammar(object):
         return cls._token_type_lookup.get(token, cls._default_token_type)
 
     @classmethod
-    def parse(cls, input_str):
-        return ShiftReduceParser(grammar=cls).parse(input_str)
+    def get_default_tokenizer(cls):
+        return tokenizers.simple_tokenizer
 
     @classmethod
-    def simple_parse(cls, input_str):
-        types, values = ShiftReduceParser(grammar=cls).parse(input_str)
-        if len(types) != 1 or len(values) != 1:
+    def parse(cls, input_str, debug=False):
+        return ShiftReduceParser(grammar=cls).parse(input_str, debug=debug)
+
+    @classmethod
+    def simple_parse(cls, input_str, debug=False):
+        types, values = ShiftReduceParser(grammar=cls).parse(input_str, debug=debug)
+        if len(types) == 1 and len(values) == 1:
+            return values[0]
+        elif len(types) == 2 and len(values) == 2 and types[1] is EOF and values[1] is EOF_VALUE:
+            return values[0]
+        else:
             raise RuntimeError('Parsing failed: {}, {}'.format(types, values))
-        return values[0]
+

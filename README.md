@@ -11,7 +11,11 @@ Simple parsers in Python for fun and profit.
     
 ## Implementing a New Grammar
 
-See examples in `shreducers/examples/`.
+See examples in `shreducers/examples/`:
+
+ * `DictG` - simplest of all grammars, the most suitable to understand the basic idea
+ * `PlusMinusArithmeticsG` -- simple arithmetic expression parser, produces syntax tree
+ * `BetterArithmeticsG` -- arithmetic expression parser that respects operator precedence, produces syntax tree
 
 There is some magic (a meta class) going on in `t` class to allow
 declaring a string constant without writing its value twice:

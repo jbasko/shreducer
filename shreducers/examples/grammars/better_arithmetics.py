@@ -1,3 +1,5 @@
+import string
+
 from shreducers import tokenizers
 from shreducers.grammar import Grammar
 from shreducers.tokenizers import EOF
@@ -12,7 +14,7 @@ class BetterArithmeticsG(Grammar):
 
     @classmethod
     def get_default_tokenizer(cls):
-        return tokenizers.tokenizer_with_eof
+        return tokenizers.create_shlex_tokenizer(with_eof=True, wordchars=string.digits + '.')
 
     @classmethod
     def get_rules(cls):

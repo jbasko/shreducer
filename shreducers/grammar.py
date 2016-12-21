@@ -52,7 +52,7 @@ class Grammar(object):
 
     @classmethod
     def get_default_tokenizer(cls):
-        return tokenizers.simple_tokenizer
+        return tokenizers.create_shlex_tokenizer()
 
     @classmethod
     def parse(cls, input_str, debug=False):

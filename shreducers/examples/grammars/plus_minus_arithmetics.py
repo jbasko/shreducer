@@ -1,4 +1,7 @@
+import string
+
 from shreducers.grammar import Grammar
+from shreducers.tokenizers import create_shlex_tokenizer
 
 
 class PlusMinusArithmeticsG(Grammar):
@@ -15,9 +18,14 @@ class PlusMinusArithmeticsG(Grammar):
         EXPR = ()
 
     @classmethod
+    def get_default_tokenizer(cls):
+        return create_shlex_tokenizer(wordchars=string.digits + '.')
+
+    @classmethod
     def get_rules(cls):
         return [
             # Basic addition and subtraction
+            ([cls.t.EXPR, cls.t.PLUS_MINUS, cls.t.EXPR], cls.binary_expr),
             ([cls.t.IDENT, cls.t.PLUS_MINUS, cls.t.IDENT], cls.binary_expr),
             ([cls.t.EXPR, cls.t.PLUS_MINUS, cls.t.IDENT], cls.binary_expr),
             ([cls.t.IDENT, cls.t.PLUS_MINUS, cls.t.EXPR], cls.binary_expr),

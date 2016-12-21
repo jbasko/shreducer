@@ -11,18 +11,23 @@ class GrammarMeta(type):
         }
         default_token_type = None
 
+        if 't' not in dct:
+            raise RuntimeError('Grammar class {} declaration is missing inner class "t"'.format(name))
+
         for token_type, token_type_values in dct['t'].__dict__.iteritems():
             if token_type.startswith('_') or token_type.upper() != token_type:
                 continue
 
             for v in token_type_values or ():
+                if v in token_type_lookup:
+                    raise RuntimeError('Value {!r} mentioned in more than one token type listing'.format(v))
                 token_type_lookup[v] = token_type
 
             # None denots default token type.
             # For tokens of higher abstraction (expressions) use empty tuple.
             if token_type_values is None:
                 if default_token_type:
-                    raise ValueError('More than one default token type declared: {} and {}'.format(
+                    raise RuntimeError('More than one default token type declared: {} and {}'.format(
                         default_token_type, token_type
                     ))
                 default_token_type = token_type

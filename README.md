@@ -2,7 +2,16 @@
 
 Simple compilers in Python for fun and profit.
 
-Components:
+## Most Useful Thing in This Project
+
+The most useful part of this project is the filter expressions parser.
+You can use it to enable advanced filtering in your APIs with queries like this:
+
+    https://your.api?filter=(status eq open and type eq store) or (status eq closed and not type eq office)
+
+The current version is quite limited, but I will add other expressions like `in` and lists later.
+
+## Components
 
  * *Tokenizers* (no need to implement your own, we rely on `shlex` from Python Standard Library)
  * Grammars

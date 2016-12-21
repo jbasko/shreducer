@@ -12,9 +12,9 @@ class PlusMinusArithmeticsG(Grammar):
 
     class t:
         IDENT = None
-        PLUS_MINUS = '+', '-'
-        PARENS_OPEN = '(',
-        PARENS_CLOSE = ')',
+        PLUS_MINUS = '+-'
+        PARENS_OPEN = '('
+        PARENS_CLOSE = ')'
         EXPR = ()
 
     @classmethod

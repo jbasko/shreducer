@@ -8,8 +8,8 @@ from shreducers.tokenizers import EOF
 class BetterArithmeticsG(Grammar):
     class t:
         IDENT = None
-        PLUS_MINUS = '+', '-'
-        MULTIPLY_DIVIDE = '*', '/'
+        PLUS_MINUS = '+-'
+        MULTIPLY_DIVIDE = '*/'
         PRODUCT = ()
 
     @classmethod

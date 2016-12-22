@@ -10,6 +10,8 @@ class BetterArithmeticsG(Grammar):
         IDENT = None
         PLUS_MINUS = '+-'
         MULTIPLY_DIVIDE = '*/'
+        PARENS_OPEN = '('
+        PARENS_CLOSE = ')'
         PRODUCT = ()
 
     @classmethod
@@ -28,6 +30,14 @@ class BetterArithmeticsG(Grammar):
             ([cls.t.IDENT, EOF], cls.product_at_eof),
             ([cls.t.IDENT, cls.t.PLUS_MINUS, cls.t.PRODUCT, EOF], cls.product_expr_at_eof),
             ([cls.t.PRODUCT, cls.t.PLUS_MINUS, cls.t.PRODUCT, EOF], cls.product_expr_at_eof),
+
+            # Parentheses.
+            ([cls.t.PARENS_OPEN, cls.t.PRODUCT, cls.t.PARENS_CLOSE], cls.remove_parens),
+
+            # Closing parenthesis is very much like EOF. The next three rules are a copy of plus/minus rules above.
+            ([cls.t.IDENT, cls.t.PARENS_CLOSE], cls.product_at_eof),
+            ([cls.t.IDENT, cls.t.PLUS_MINUS, cls.t.PRODUCT, cls.t.PARENS_CLOSE], cls.product_expr_at_eof),
+            ([cls.t.PRODUCT, cls.t.PLUS_MINUS, cls.t.PRODUCT, cls.t.PARENS_CLOSE], cls.product_expr_at_eof),
         ]
 
     @classmethod
@@ -36,8 +46,12 @@ class BetterArithmeticsG(Grammar):
 
     @classmethod
     def product_at_eof(cls, types, (a, eof)):
-        return [cls.t.PRODUCT, EOF], [a, eof]
+        return [cls.t.PRODUCT, types[1]], [a, eof]
 
     @classmethod
     def product_expr_at_eof(cls, types, (a, op, b, eof)):
-        return [cls.t.PRODUCT, EOF], [(op, a, b), eof]
+        return [cls.t.PRODUCT, types[3]], [(op, a, b), eof]
+
+    @classmethod
+    def remove_parens(cls, types, (p1, x, p2)):
+        return [[types[1]], [x]]

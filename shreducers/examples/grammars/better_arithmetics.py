@@ -76,6 +76,7 @@ class BetterArithmeticsG(Grammar):
     @classmethod
     def negation_at_bof(cls, (bof_type, op_type, a_type), (bof, op, a)):
         if a_type == cls.t.IDENT:
-            return [bof_type, a_type], [bof, '-{}'.format(a)]
+            sign = op if op == '-' else ''
+            return [bof_type, a_type], [bof, '{}{}'.format(sign, a)]
         else:
-            return [bof_type, cls.t.PRODUCT], [bof, ('-', '0', a)]
+            return [bof_type, cls.t.PRODUCT], [bof, (op, '0', a)]

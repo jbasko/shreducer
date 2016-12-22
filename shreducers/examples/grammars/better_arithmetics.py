@@ -2,7 +2,7 @@ import string
 
 from shreducers import tokenizers
 from shreducers.grammar import Grammar
-from shreducers.tokenizers import EOF
+from shreducers.tokenizers import EOF, BOF
 
 
 class BetterArithmeticsG(Grammar):
@@ -16,7 +16,11 @@ class BetterArithmeticsG(Grammar):
 
     @classmethod
     def get_default_tokenizer(cls):
-        return tokenizers.create_shlex_tokenizer(with_eof=True, wordchars=string.digits + '.')
+        return tokenizers.create_shlex_tokenizer(
+            with_bof=True,
+            with_eof=True,
+            wordchars=string.digits + '.',
+        )
 
     @classmethod
     def get_rules(cls):
@@ -26,18 +30,31 @@ class BetterArithmeticsG(Grammar):
             ([cls.t.IDENT, cls.t.MULTIPLY_DIVIDE, cls.t.IDENT], cls.product_expr),
             ([cls.t.IDENT, cls.t.MULTIPLY_DIVIDE, cls.t.PRODUCT], cls.product_expr),
 
-            # Plus/minus can only be applied when we've seen the entire string which means we've seen the EOF
-            ([cls.t.IDENT, EOF], cls.product_at_eof),
-            ([cls.t.IDENT, cls.t.PLUS_MINUS, cls.t.PRODUCT, EOF], cls.product_expr_at_eof),
-            ([cls.t.PRODUCT, cls.t.PLUS_MINUS, cls.t.PRODUCT, EOF], cls.product_expr_at_eof),
-
             # Parentheses.
-            ([cls.t.PARENS_OPEN, cls.t.PRODUCT, cls.t.PARENS_CLOSE], cls.remove_parens),
+            # Opening parentheses are pretty much like BOF - beginning of sentence -
+            # and closing parentheses are like EOF - end of sentence.
+            # So all rules with parentheses also apply for BOF and EOF.
 
-            # Closing parenthesis is very much like EOF. The next three rules are a copy of plus/minus rules above.
+            ([cls.t.PARENS_OPEN, cls.t.PRODUCT, cls.t.PARENS_CLOSE], cls.remove_parens),
+            ([BOF, cls.t.PRODUCT, EOF], cls.remove_parens),  # redundant for our parser, added just for completeness
+
+            # Addition and subtraction is safe when we have seen the ending of "sentence"
+            ([cls.t.IDENT, EOF], cls.product_at_eof),
             ([cls.t.IDENT, cls.t.PARENS_CLOSE], cls.product_at_eof),
+
+            ([cls.t.IDENT, cls.t.PLUS_MINUS, cls.t.PRODUCT, EOF], cls.product_expr_at_eof),
             ([cls.t.IDENT, cls.t.PLUS_MINUS, cls.t.PRODUCT, cls.t.PARENS_CLOSE], cls.product_expr_at_eof),
+
+            ([cls.t.PRODUCT, cls.t.PLUS_MINUS, cls.t.PRODUCT, EOF], cls.product_expr_at_eof),
             ([cls.t.PRODUCT, cls.t.PLUS_MINUS, cls.t.PRODUCT, cls.t.PARENS_CLOSE], cls.product_expr_at_eof),
+
+            # Negation.
+            # Opposite of addition and subtraction -- it is only safe in the beginning
+            ([BOF, cls.t.PLUS_MINUS, cls.t.IDENT], cls.negation_at_bof),
+            ([cls.t.PARENS_OPEN, cls.t.PLUS_MINUS, cls.t.IDENT], cls.negation_at_bof),
+
+            ([BOF, cls.t.PLUS_MINUS, cls.t.PRODUCT], cls.negation_at_bof),
+            ([cls.t.PARENS_OPEN, cls.t.PLUS_MINUS, cls.t.PRODUCT], cls.negation_at_bof),
         ]
 
     @classmethod
@@ -54,4 +71,11 @@ class BetterArithmeticsG(Grammar):
 
     @classmethod
     def remove_parens(cls, types, (p1, x, p2)):
-        return [[types[1]], [x]]
+        return [types[1]], [x]
+
+    @classmethod
+    def negation_at_bof(cls, (bof_type, op_type, a_type), (bof, op, a)):
+        if a_type == cls.t.IDENT:
+            return [bof_type, a_type], [bof, '-{}'.format(a)]
+        else:
+            return [bof_type, cls.t.PRODUCT], [bof, ('-', '0', a)]

@@ -1,16 +1,22 @@
 import shlex
 
 
-class _Eof(object):
+class _SpecialMarker(object):
+    def __init__(self, name):
+        self.name = name
+
     def __repr__(self):
-        return '<EOF_VALUE>'
+        return '<{}_VALUE>'.format(self.name.upper())
 
 
-EOF_VALUE = _Eof()
 EOF = 'EOF'
+EOF_VALUE = _SpecialMarker(EOF)
+
+BOF = 'BOF'
+BOF_VALUE = _SpecialMarker(BOF)
 
 
-def create_shlex_tokenizer(with_eof=False, **settings):
+def create_shlex_tokenizer(with_eof=False, with_bof=False, **settings):
     """
     See what attributes can be set on shlex:
     https://docs.python.org/2/library/shlex.html#shlex-objects
@@ -20,6 +26,8 @@ def create_shlex_tokenizer(with_eof=False, **settings):
     """
     def custom_tokenizer(input_str):
         tokenizer = shlex.shlex(input_str)
+        if with_bof:
+            yield BOF_VALUE
         for k, v in settings.iteritems():
             setattr(tokenizer, k, v)
         for t in tokenizer:

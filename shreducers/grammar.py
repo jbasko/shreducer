@@ -1,13 +1,14 @@
 from shreducers import tokenizers
 from shreducers.parser import ShiftReduceParser
-from shreducers.tokenizers import EOF, EOF_VALUE
+from shreducers.tokenizers import EOF, EOF_VALUE, BOF_VALUE, BOF
 
 
 class GrammarMeta(type):
     def __new__(meta, name, bases, dct):
         token_type_lookup = {
-            # Include EOF in all lookups
-            EOF_VALUE: EOF
+            # Include BOF and EOF in all lookups
+            BOF_VALUE: BOF,
+            EOF_VALUE: EOF,
         }
         default_token_type = None
 
@@ -68,8 +69,12 @@ class Grammar(object):
         types, values = ShiftReduceParser(grammar=cls).parse(input_str, debug=debug)
         if len(types) == 1 and len(values) == 1:
             return values[0]
-        elif len(types) == 2 and len(values) == 2 and types[1] is EOF and values[1] is EOF_VALUE:
+        elif len(types) == 2 and len(values) == 2 and (types[0], values[0]) == (BOF, BOF_VALUE):
+            return values[1]
+        elif len(types) == 2 and len(values) == 2 and (types[1], values[1]) == (EOF, EOF_VALUE):
             return values[0]
+        elif len(types) == 3 and len(values) == 3 and (types[0], values[0], types[2], values[2]) == (BOF, BOF_VALUE, EOF, EOF_VALUE):
+            return values[1]
         else:
             raise RuntimeError('Parsing failed: {}, {}'.format(types, values))
 

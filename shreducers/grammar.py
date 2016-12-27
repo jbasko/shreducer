@@ -24,7 +24,7 @@ class GrammarMeta(type):
                     raise RuntimeError('Value {!r} mentioned in more than one token type listing'.format(v))
                 token_type_lookup[v] = token_type
 
-            # None denots default token type.
+            # None denotes default token type.
             # For tokens of higher abstraction (expressions) use empty tuple.
             if token_type_values is None:
                 if default_token_type:
@@ -50,6 +50,11 @@ class Grammar(object):
 
     @classmethod
     def get_rules(cls):
+        """
+        This can be either a generator or just return a list of rules.
+        For non-trivial grammars it's more convenient to use a generator
+        as some rules are repetitive.
+        """
         raise NotImplementedError()
 
     @classmethod

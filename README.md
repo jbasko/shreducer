@@ -7,7 +7,7 @@ Simple compilers in Python for fun and profit.
 The most useful part of this project is the filter expressions parser.
 You can use it to enable advanced filtering in your APIs with queries like this:
 
-    https://your.api?filter=(status eq open and type eq store) or (status eq closed and not type eq office)
+    https://your.api?filter=(status eq open and type eq store) or (status eq closed and type not in office, garage)
 
 ## Components
 
@@ -33,10 +33,13 @@ All these components together make a compiler.
 
 See examples in `shreducers/examples/`:
 
- * `DictG` - simplest of all grammars, the most suitable to understand the basic idea
- * `PlusMinusArithmeticsG` -- simple arithmetic expression parser, produces parse tree
- * `BetterArithmeticsG` -- arithmetic expression parser that respects operator precedence, produces parse tree
- * `FilterExpressionsG` -- comparison operators and logical operators, produces parse tree
+ * `DictG` - simplest of all grammars, the most suitable to understand the basic idea, parser produces parsed dictionary
+ * `ListG` - another simple grammar, but unlike dictionary grammar, parser for this one produces parse tree
+ * `PlusMinusArithmeticsG` - simple arithmetic expression parser, parser produces parse tree
+ * `BetterArithmeticsG` - arithmetic expression parser that respects operator precedence, parser produces parse tree
+ * `FilterExpressionsG` - comparison operators and logical operators, parser produces parse tree
+ * `BetterFiltersG` - comparatively rich filter expression language, unlike other grammars this one uses look-ahead,
+    parser produces parse tree 
 
 There is some magic (a meta class) going on in `t` class to allow
 declaring a string constant without writing its value twice:

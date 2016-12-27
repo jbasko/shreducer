@@ -52,4 +52,3 @@ def test_list_notation_with_parentheses():
     assert s('(a, b) in (c, d)') == ('in', ('list', ['a', 'b']), ('list', ['c', 'd']))
 
     assert s('not a in (b, c)') == ('not', ('in', 'a', ('list', ['b', 'c'])))
-

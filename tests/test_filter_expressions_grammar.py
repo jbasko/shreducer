@@ -40,3 +40,16 @@ def test_cannot_apply_negation_on_identifiers(expr):
     with pytest.raises(RuntimeError):
         s(expr)
 
+
+def test_in_operator():
+    assert s('a in b') == ('in', 'a', 'b')
+
+
+def test_list_notation_with_parentheses():
+    assert s('a in (b, c)') == ('in', 'a', ('list', ['b', 'c']))
+    assert s('(a, b) in c') == ('in', ('list', ['a', 'b']), 'c')
+    assert s('a in (b, c, d, e)') == ('in', 'a', ('list', ['b', 'c', 'd', 'e']))
+    assert s('(a, b) in (c, d)') == ('in', ('list', ['a', 'b']), ('list', ['c', 'd']))
+
+    assert s('not a in (b, c)') == ('not', ('in', 'a', ('list', ['b', 'c'])))
+

@@ -9,8 +9,6 @@ You can use it to enable advanced filtering in your APIs with queries like this:
 
     https://your.api?filter=(status eq open and type eq store) or (status eq closed and not type eq office)
 
-The current version is quite limited, but I will add other expressions like `in` and lists later.
-
 ## Components
 
  * *Tokenizers* (no need to implement your own, we rely on `shlex` from Python Standard Library)
@@ -36,8 +34,9 @@ All these components together make a compiler.
 See examples in `shreducers/examples/`:
 
  * `DictG` - simplest of all grammars, the most suitable to understand the basic idea
- * `PlusMinusArithmeticsG` -- simple arithmetic expression parser, produces syntax tree
- * `BetterArithmeticsG` -- arithmetic expression parser that respects operator precedence, produces syntax tree
+ * `PlusMinusArithmeticsG` -- simple arithmetic expression parser, produces parse tree
+ * `BetterArithmeticsG` -- arithmetic expression parser that respects operator precedence, produces parse tree
+ * `FilterExpressionsG` -- comparison operators and logical operators, produces parse tree
 
 There is some magic (a meta class) going on in `t` class to allow
 declaring a string constant without writing its value twice:

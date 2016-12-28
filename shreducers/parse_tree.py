@@ -21,24 +21,54 @@ class PtNode(object):
     """
     Represents a node in parse tree.
     """
-    __slots__ = ('op', 'a', 'b', 'x')
-
     def __init__(self, *args, **kwargs):
-        self.op = None
-        self.a = None
-        self.b = None
-        self.x = PtNodeExtras()
+        self._op = None
+        self._a = None
+        self._b = None
+        self._x = PtNodeExtras()
 
         if args:
             if len(args) == 1:
                 args = args[0]
 
-            for i, k in enumerate(self.__slots__):
+            for i, k in enumerate(('op', 'a', 'b', 'x')):
                 if len(args) > i:
-                    setattr(self, k, args[i])
+                    setattr(self, '_' + k, args[i])
 
         for k, v in kwargs.iteritems():
-            setattr(self, k, v)
+            setattr(self, '_' + k, v)
+
+    @property
+    def a(self):
+        if isinstance(self._a, tuple):
+            self._a = PtNode(self._a)
+        return self._a
+
+    @a.setter
+    def a(self, value):
+        self._a = value
+
+    @property
+    def b(self):
+        if isinstance(self._b, tuple):
+            self._b = PtNode(self._b)
+        return self._b
+
+    @b.setter
+    def b(self, value):
+        self._b = value
+
+    @property
+    def op(self):
+        return self._op
+
+    @op.setter
+    def op(self, value):
+        self._op = value
+
+    @property
+    def x(self):
+        return self._x
 
     @property
     def operands(self):
@@ -46,6 +76,12 @@ class PtNode(object):
             return self.a,
         else:
             return self.a, self.b
+
+    def mark_operands(self, **marks):
+        if self.a is not None and isinstance(self.a, PtNode):
+            self.a.x.update(marks)
+        if self.b is not None and isinstance(self.b, PtNode):
+            self.b.x.update(marks)
 
     def to_tuple(self):
         return (self.op,) + tuple(ab.to_tuple() if isinstance(ab, PtNode) else ab for ab in self.operands)

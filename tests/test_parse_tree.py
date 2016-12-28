@@ -57,13 +57,11 @@ def test_nested_parse_tree_initialised(parse_tree):
 
     pt = PtNode(parse_tree)
     assert pt.op == 'and'
-    assert pt.a[0] == 'or'
-    assert pt.b[0] == 'gt'
+    assert pt.a.op == 'or'
+    assert pt.b.op == 'gt'
 
-    pt.a = PtNode(pt.a)
     assert pt.a.op == 'or'
 
-    pt.b = PtNode(pt.b)
     assert pt.b.op == 'gt'
 
     assert pt.to_tuple() == parse_tree_copy
@@ -118,6 +116,19 @@ def test_parse_tree_processor_visits_every_node(parse_tree):
     assert pt.b.op == 'GREATER_THAN'
     assert pt.b.a == 'weight!'
     assert pt.b.b == '100!'
+
+
+def test_pt_node_marks_operands(parse_tree):
+    class MyProcessor(ParseTreeProcessor):
+        def process_unrecognised(self, node):
+            node.mark_operands(visited_by_my_processor=True)
+            return node
+
+    pt = MyProcessor().process(parse_tree)
+    assert pt.x.visited_by_my_processor is None
+    assert pt.a.x.visited_by_my_processor is True
+    assert pt.a.a.x.visited_by_my_processor is True
+    assert pt.b.x.visited_by_my_processor is True
 
 
 def test_parse_tree_multiprocessor_calls_all_processors(parse_tree):

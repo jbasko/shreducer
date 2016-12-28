@@ -184,3 +184,52 @@ def test_cannot_extend_multi_processor_cls():
 
     with pytest.raises(RuntimeError):
         MyMultiProcessor(ParseTreeProcessor())
+
+
+def test_multi_processor_marks_is_root(parse_tree):
+    pt = ParseTreeMultiProcessor(ParseTreeProcessor(), ParseTreeProcessor()).process(parse_tree)
+    assert pt.x.is_root
+    assert not pt.a.x.is_root
+    assert not pt.b.x.is_root
+
+
+def test_multi_processor_application_order():
+    parse_tree = ('and', ('eq', 'a', 'b'), ('not', ('c')))
+    calls = []
+
+    class P1(ParseTreeProcessor):
+        def process_unrecognised(self, node):
+            calls.append(1)
+            return node
+
+    class P2(ParseTreeProcessor):
+        def process_unrecognised(self, node):
+            calls.append(2)
+            return node
+
+    class P3(ParseTreeProcessor):
+        def process_unrecognised(self, node):
+            calls.append(3)
+            return node
+
+    # Sequential processing with 2 slots
+    pt1 = copy.deepcopy(parse_tree)
+    ParseTreeMultiProcessor(P1(), P2()).process(pt1)
+
+    assert calls == [1, 1, 1, 2, 2, 2]
+
+    calls[:] = []
+
+    # Parallel processing with 1 slot
+    pt2 = copy.deepcopy(parse_tree)
+    ParseTreeMultiProcessor([P1(), P2()]).process(pt2)
+
+    assert calls == [1, 2, 1, 2, 1, 2]
+
+    calls[:] = []
+
+    # Parallel processing with 2 slots
+    pt2 = copy.deepcopy(parse_tree)
+    ParseTreeMultiProcessor([P1(), P2()], P3()).process(pt2)
+
+    assert calls == [1, 2, 1, 2, 1, 2, 3, 3, 3]

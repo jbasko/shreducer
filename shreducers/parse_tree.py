@@ -162,25 +162,60 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
     """
 
     def __init__(self, *processors):
-        self._processors = processors
         if self.__class__.__name__ != ParseTreeMultiProcessor.__name__:
             raise RuntimeError('Attempting to extend {}'.format(ParseTreeMultiProcessor.__name__))
 
-    def _process_with_all(self, method_name, node):
-        for p in self._processors or ():
+        self._all_slots = processors
+        self._current_slot_index = None
+
+    @property
+    def _current_slot(self):
+        """
+        Returns a list of processors that can be applied in "parallel" which is
+        in the same -- current -- traversal of the tree.
+        """
+        if len(self._all_slots) <= self._current_slot_index:
+            return []
+        else:
+            current_slot = self._all_slots[self._current_slot_index]
+            if isinstance(current_slot, (tuple, list)):
+                return current_slot
+            else:
+                return [current_slot]
+
+    def _process_in_current_slot(self, method_name, node):
+        """
+        Returns `node` after it has been passed through `method_name` method of all processors in the current slot.
+        """
+        for p in self._current_slot:
             node = getattr(p, method_name)(node)
         return node
 
     def process(self, node):
+        """
+        This method is called only once with the root node.
+        """
+
         if isinstance(node, tuple):
             node = PtNode(node)
-        if isinstance(node, PtNode):
-            node.a = self._process_with_all(self.process.__name__, node.a)
+
+        assert isinstance(node, PtNode)
+
+        assert node.x.is_root is None
+        node.x.is_root = True
+        node.mark_operands(is_root=False)
+
+        self._current_slot_index = 0
+        while self._current_slot_index < len(self._all_slots):
+
+            node.a = self._process_in_current_slot(self.process.__name__, node.a)
             if node.b is not None:
-                node.b = self._process_with_all(self.process.__name__, node.b)
-            return self._process_with_all(self.do_process.__name__, node)
-        else:
-            return self._process_with_all(self.process_primitive.__name__, node)
+                node.b = self._process_in_current_slot(self.process.__name__, node.b)
+            node = self._process_in_current_slot(self.do_process.__name__, node)
+
+            self._current_slot_index += 1
+
+        return node
 
     def do_process(self, node):
         raise RuntimeError('Do not call this')

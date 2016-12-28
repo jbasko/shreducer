@@ -90,6 +90,16 @@ class PtNode(object):
         return '<{} op={}, a={}, b={}, x={}>'.format(self.__class__.__name__, self.op, self.a, self.b, self.x)
 
 
+class PtNodeNotRecognised(Exception):
+    """
+    The exception that strict processors can choose to throw when encountering
+    a node not handled by any process method.
+    """
+    def __init__(self, node):
+        super(PtNodeNotRecognised, self).__init__('{!r}'.format(node))
+        self.node = node
+
+
 class ParseTreeProcessor(object):
     """
     Generic parse tree processor that other processors can extend
@@ -118,14 +128,17 @@ class ParseTreeProcessor(object):
             func.delegate_of = self.delegate_of
             return func
 
-    def __new__(cls, *args):
-        instance = super(ParseTreeProcessor, cls).__new__(cls, *args)
+    def __new__(cls, *args, **kwargs):
+        instance = super(ParseTreeProcessor, cls).__new__(cls, *args, **kwargs)
         for k, v in cls.__dict__.iteritems():
             if v and callable(v) and hasattr(v, 'delegate_of'):
                 for d in v.delegate_of:
                     # Must assign the bounded method of instance, not that of the class
                     setattr(instance, d, getattr(instance, k))
         return instance
+
+    def __init__(self, strict=False):
+        self._strict = strict
 
     def process(self, node):
         if isinstance(node, tuple):
@@ -149,7 +162,10 @@ class ParseTreeProcessor(object):
         return primitive
 
     def process_unrecognised(self, node):
-        return node
+        if self._strict:
+            raise PtNodeNotRecognised(node=node)
+        else:
+            return node
 
 
 class ParseTreeMultiProcessor(ParseTreeProcessor):

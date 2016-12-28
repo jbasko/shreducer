@@ -2,7 +2,7 @@ import copy
 
 import pytest
 
-from shreducers.parse_tree import PtNode, ParseTreeProcessor, ParseTreeMultiProcessor
+from shreducers.parse_tree import PtNode, ParseTreeProcessor, ParseTreeMultiProcessor, PtNodeNotRecognised
 
 
 @pytest.fixture
@@ -233,3 +233,19 @@ def test_multi_processor_application_order():
     ParseTreeMultiProcessor([P1(), P2()], P3()).process(pt2)
 
     assert calls == [1, 2, 1, 2, 1, 2, 3, 3, 3]
+
+
+def test_strict_parse_tree_processor_raises_exception_on_unrecognised_nodes():
+    class MyProcessor(ParseTreeProcessor):
+        def process_or(self, node):
+            return node
+        def process_eq(self, node):
+            return node
+
+    ParseTreeProcessor(strict=False).process(('or', ('ne', 'a', 'b'), ('eq', 'c', 'd')))
+
+    with pytest.raises(PtNodeNotRecognised) as excinfo:
+        ParseTreeProcessor(strict=True).process(('or', ('ne', 'a', 'b'), ('eq', 'c', 'd')))
+
+    exc = excinfo.value
+    assert exc.node.to_tuple() == ('ne', 'a', 'b')

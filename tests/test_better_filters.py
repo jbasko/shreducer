@@ -55,3 +55,7 @@ def test_logical_expressions_1(input_str):
         ('in', ('list', ['a', 'b']), ('list', ['c', 'd'])),
         ('not', ('in', ('list', ['e', 'f']), ('list', ['g', 'h'])))
     )
+
+
+def test_dot_is_part_of_wordchars():
+    s('some.field eq 44.50') == ('eq', 'some.field', '44.50')

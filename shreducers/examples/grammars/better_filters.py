@@ -1,3 +1,5 @@
+import string
+
 from shreducers import tokenizers
 from shreducers.grammar import Grammar
 from shreducers.tokenizers import EOF
@@ -24,7 +26,11 @@ class BetterFiltersG(Grammar):
 
     @classmethod
     def get_default_tokenizer(cls):
-        return tokenizers.create_shlex_tokenizer(with_bof=True, with_eof=True)
+        return tokenizers.create_shlex_tokenizer(
+            with_bof=True,
+            with_eof=True,
+            wordchars=string.ascii_uppercase + string.ascii_lowercase + string.digits + '_.',
+        )
 
     @classmethod
     def get_rules(cls):

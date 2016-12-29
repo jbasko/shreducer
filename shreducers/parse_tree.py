@@ -227,9 +227,23 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
         if processors:
             self.slot(*processors)
 
+    def _create_process_unrecognised_from_function(self, func):
+        def process_unrecognised(inst, node):
+            return func(node)
+        return process_unrecognised
+
     def _validate_slot(self, slot):
         pre_order = None
-        for p in slot['processors']:
+        for i, p in enumerate(slot['processors']):
+            if not isinstance(p, ParseTreeProcessor) and callable(p):
+                # Create processor on the fly based on the function passed
+                p_cls = type(p.__name__, (ParseTreeProcessor,), {
+                    'pre_order': '_pre_' in p.__name__,
+                    'process_unrecognised': self._create_process_unrecognised_from_function(p),
+                })
+                p = p_cls()
+                slot['processors'][i] = p
+
             if pre_order is None:
                 pre_order = p._pre_order
             if pre_order != p._pre_order:
@@ -243,7 +257,7 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
         """
         self._all_slots.append({
             'strict': False,
-            'processors': processors,
+            'processors': list(processors),
             'pre_order': None,
         })
         self._validate_slot(self._all_slots[-1])
@@ -256,7 +270,7 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
         """
         self._all_slots.append({
             'strict': True,
-            'processors': processors,
+            'processors': list(processors),
             'pre_order': None,
         })
         self._validate_slot(self._all_slots[-1])
@@ -340,7 +354,7 @@ class ParseTreeInspector(ParseTreeProcessor):
         node.x.print_indent = node.x.print_indent or 0
         node.mark_operands(print_indent=node.x.print_indent + 2)
         if node.is_leaf:
-            print (' ' * node.x.print_indent), node.op, node.operands, '\t', node.x
+            print '{:50} {}'.format((' ' * node.x.print_indent) + node.op + ' ' + str(node.operands), node.x)
         else:
-            print (' ' * node.x.print_indent), node.op
+            print '{:50} {}'.format((' ' * node.x.print_indent) + node.op, node.x)
         return node

@@ -262,11 +262,15 @@ def test_strict_multi_processor_raises_exception_if_none_of_same_slot_processors
         def process_comparison_ops(self, node):
             return node
 
-    proc = ParseTreeMultiProcessor().strict_slot(LogicalOperatorProcessor(), ComparisonOperatorProcessor())
-    proc.process(('or', ('ne', 'a', 'b'), ('eq', 'c', 'd')))
+    strict_proc = ParseTreeMultiProcessor().strict_slot(LogicalOperatorProcessor(), ComparisonOperatorProcessor())
+    strict_proc.process(('or', ('ne', 'a', 'b'), ('eq', 'c', 'd')))
 
     with pytest.raises(PtNodeNotRecognised) as excinfo:
-        proc.process(('or', ('ne', 'a', 'b'), ('=', 'c', 'd')))
+        strict_proc.process(('or', ('ne', 'a', 'b'), ('=', 'c', 'd')))
 
     exc = excinfo.value
     assert exc.node.to_tuple() == ('=', 'c', 'd')
+
+    non_strict_proc = ParseTreeMultiProcessor().slot(LogicalOperatorProcessor(), ComparisonOperatorProcessor())
+    non_strict_proc.process(('or', ('ne', 'a', 'b'), ('eq', 'c', 'd')))
+    non_strict_proc.process(('or', ('ne', 'a', 'b'), ('=', 'c', 'd')))

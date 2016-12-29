@@ -214,7 +214,7 @@ def test_multi_processor_application_order():
 
     # Sequential processing with 2 slots
     pt1 = copy.deepcopy(parse_tree)
-    ParseTreeMultiProcessor(P1(), P2()).process(pt1)
+    ParseTreeMultiProcessor(P1()).slot(P2()).process(pt1)
 
     assert calls == [1, 1, 1, 2, 2, 2]
 
@@ -222,7 +222,7 @@ def test_multi_processor_application_order():
 
     # Parallel processing with 1 slot
     pt2 = copy.deepcopy(parse_tree)
-    ParseTreeMultiProcessor([P1(), P2()]).process(pt2)
+    ParseTreeMultiProcessor(P1(), P2()).process(pt2)
 
     assert calls == [1, 2, 1, 2, 1, 2]
 
@@ -230,7 +230,7 @@ def test_multi_processor_application_order():
 
     # Parallel processing with 2 slots
     pt2 = copy.deepcopy(parse_tree)
-    ParseTreeMultiProcessor([P1(), P2()], P3()).process(pt2)
+    ParseTreeMultiProcessor(P1(), P2()).slot(P3()).process(pt2)
 
     assert calls == [1, 2, 1, 2, 1, 2, 3, 3, 3]
 
@@ -249,3 +249,24 @@ def test_strict_parse_tree_processor_raises_exception_on_unrecognised_nodes():
 
     exc = excinfo.value
     assert exc.node.to_tuple() == ('ne', 'a', 'b')
+
+
+def test_strict_multi_processor_raises_exception_if_none_of_same_slot_processors_recognises_a_node():
+    class LogicalOperatorProcessor(ParseTreeProcessor):
+        @ParseTreeProcessor.delegate_of('process_and', 'process_or', 'process_not')
+        def process_logical_ops(self, node):
+            return node
+
+    class ComparisonOperatorProcessor(ParseTreeProcessor):
+        @ParseTreeProcessor.delegate_of('process_eq', 'process_ne')
+        def process_comparison_ops(self, node):
+            return node
+
+    proc = ParseTreeMultiProcessor().strict_slot(LogicalOperatorProcessor(), ComparisonOperatorProcessor())
+    proc.process(('or', ('ne', 'a', 'b'), ('eq', 'c', 'd')))
+
+    with pytest.raises(PtNodeNotRecognised) as excinfo:
+        proc.process(('or', ('ne', 'a', 'b'), ('=', 'c', 'd')))
+
+    exc = excinfo.value
+    assert exc.node.to_tuple() == ('=', 'c', 'd')

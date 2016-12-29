@@ -162,9 +162,18 @@ class ParseTreeProcessor(object):
         return primitive
 
     def process_unrecognised(self, node):
+        """
+        Handles nodes that aren't picked up by any concrete process_<op> methods because the processor
+        doesn't have them.
+
+        When overriding this method, do not call super() and do not set node.x.recognised to False as below
+        because that would break strict parsing in multi processor which relies on that marker in detecting
+        that no processor recognised this node.
+        """
         if self._strict:
             raise PtNodeNotRecognised(node=node)
         else:
+            node.x.recognised = False
             return node
 
 
@@ -181,8 +190,33 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
         if self.__class__.__name__ != ParseTreeMultiProcessor.__name__:
             raise RuntimeError('Attempting to extend {}'.format(ParseTreeMultiProcessor.__name__))
 
-        self._all_slots = processors
+        self._all_slots = []
         self._current_slot_index = None
+
+        if processors:
+            self.slot(*processors)
+
+    def slot(self, *processors):
+        """
+        Registers a collection of processors that will be run "in parallel" after
+        any previously registered slots have processed the entire tree.
+        """
+        self._all_slots.append({
+            'strict': False,
+            'processors': processors,
+        })
+        return self
+
+    def strict_slot(self, *processors):
+        """
+        Same as slot() with only exception being that every node is required to be recognised
+        by at least one of the processors.
+        """
+        self._all_slots.append({
+            'strict': True,
+            'processors': processors,
+        })
+        return self
 
     @property
     def _current_slot(self):
@@ -190,21 +224,23 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
         Returns a list of processors that can be applied in "parallel" which is
         in the same -- current -- traversal of the tree.
         """
-        if len(self._all_slots) <= self._current_slot_index:
-            return []
-        else:
-            current_slot = self._all_slots[self._current_slot_index]
-            if isinstance(current_slot, (tuple, list)):
-                return current_slot
-            else:
-                return [current_slot]
+        return self._all_slots[self._current_slot_index]
 
     def _process_in_current_slot(self, method_name, node):
         """
         Returns `node` after it has been passed through `method_name` method of all processors in the current slot.
         """
-        for p in self._current_slot:
+        recognised = False
+        for p in self._current_slot['processors']:
+            # If node reaches the default process_unrecognised(), node.x.recognised will be reset to False
+            # and we'll know that this processor hasn't recognised it.
+            node.x.recognised = True
             node = getattr(p, method_name)(node)
+            recognised = recognised or node.x.recognised
+
+        if self._current_slot['strict'] and not recognised:
+            raise PtNodeNotRecognised(node=node)
+
         return node
 
     def process(self, node):

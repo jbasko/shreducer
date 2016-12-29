@@ -274,3 +274,60 @@ def test_strict_multi_processor_raises_exception_if_none_of_same_slot_processors
     non_strict_proc = ParseTreeMultiProcessor().slot(LogicalOperatorProcessor(), ComparisonOperatorProcessor())
     non_strict_proc.process(('or', ('ne', 'a', 'b'), ('eq', 'c', 'd')))
     non_strict_proc.process(('or', ('ne', 'a', 'b'), ('=', 'c', 'd')))
+
+
+def test_pre_order_processor_can_calculate_node_depth_in_one_pass(parse_tree):
+    class DepthMarker(ParseTreeProcessor):
+        pre_order = True
+        def process_unrecognised(self, node):
+            node.x.depth = node.x.depth or 0
+            node.mark_operands(depth=node.x.depth + 1)
+            return node
+
+    proc = DepthMarker()
+
+    pt = proc.process(('eq', 'a', 'b'))
+    assert pt.x.depth == 0
+
+    pt = proc.process(('and', ('eq', 'a', 'b'), ('ne', 'c', 'd')))
+    assert pt.x.depth == 0
+    assert pt.a.x.depth == 1
+    assert pt.b.x.depth == 1
+
+    pt = proc.process(parse_tree)
+    assert pt.a.b.a.to_tuple() == ('eq', 'type', 'special')
+    assert pt.a.b.a.x.depth == 3
+
+
+def test_multi_processor_does_not_accept_post_and_pre_order_mix_in_one_slot():
+    ParseTreeMultiProcessor(ParseTreeProcessor(pre_order=False), ParseTreeProcessor(pre_order=False))
+    ParseTreeMultiProcessor(ParseTreeProcessor(pre_order=True), ParseTreeProcessor(pre_order=True))
+
+    with pytest.raises(RuntimeError):
+        ParseTreeMultiProcessor(ParseTreeProcessor(pre_order=True), ParseTreeProcessor(pre_order=False))
+
+    with pytest.raises(RuntimeError):
+        ParseTreeMultiProcessor(ParseTreeProcessor(pre_order=False), ParseTreeProcessor(pre_order=True))
+
+
+def test_multi_processor_supports_pre_order(parse_tree):
+    class DepthMarker(ParseTreeProcessor):
+        pre_order = True
+        def process_unrecognised(self, node):
+            node.x.depth = node.x.depth or 0
+            node.mark_operands(depth=node.x.depth + 1)
+            return node
+
+    proc = ParseTreeMultiProcessor(DepthMarker())
+
+    pt = proc.process(('eq', 'a', 'b'))
+    assert pt.x.depth == 0
+
+    pt = proc.process(('and', ('eq', 'a', 'b'), ('ne', 'c', 'd')))
+    assert pt.x.depth == 0
+    assert pt.a.x.depth == 1
+    assert pt.b.x.depth == 1
+
+    pt = proc.process(parse_tree)
+    assert pt.a.b.a.to_tuple() == ('eq', 'type', 'special')
+    assert pt.a.b.a.x.depth == 3

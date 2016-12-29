@@ -89,6 +89,16 @@ class PtNode(object):
     def __repr__(self):
         return '<{} op={}, a={}, b={}, x={}>'.format(self.__class__.__name__, self.op, self.a, self.b, self.x)
 
+    @property
+    def is_leaf(self):
+        """
+        Returns True if there is no tree of nodes below this node.
+
+        Note that ('eq', 'a', 'b') is a leaf node.
+        Primitive operands aren't wrapped in PtNodes, so this would never be called for 'a' or 'b'.
+        """
+        return not isinstance(self.a, PtNode) and not isinstance(self.b, PtNode)
+
 
 class PtNodeNotRecognised(Exception):
     """
@@ -115,6 +125,9 @@ class ParseTreeProcessor(object):
     you may want to use ParseTreeMultiProcessor which is a chain of processors.
     """
 
+    strict = False
+    pre_order = False
+
     class delegate_of(object):
         """
         Decorator to allow writing one method that does the job of many.
@@ -137,19 +150,37 @@ class ParseTreeProcessor(object):
                     setattr(instance, d, getattr(instance, k))
         return instance
 
-    def __init__(self, strict=False):
-        self._strict = strict
+    def __init__(self, strict=None, pre_order=None):
+        """
+        If `strict` is True, the processor will raise PtNodeNotRecognised when a node is not picked up by
+        any process_<op>(node) handler.
+
+        If `pre_order` is True, the node will be processed before processing its operands node.a and node.b.
+
+        By default, the processor traverses parse tree in post-order which means that all process_<op>
+        handlers work with node whose operands are already processed by this processor.
+        """
+        self._strict = strict if strict is not None else self.strict
+        self._pre_order = pre_order if pre_order is not None else self.pre_order
 
     def process(self, node):
         if isinstance(node, tuple):
             node = PtNode(node)
-        if isinstance(node, PtNode):
-            node.a = self.process(node.a)
-            if node.b is not None:
-                node.b = self.process(node.b)
-            return self.do_process(node)
-        else:
+
+        if not isinstance(node, PtNode):
             return self.process_primitive(node)
+
+        if self._pre_order:
+            node = self.do_process(node)
+
+        node.a = self.process(node.a)
+        if node.b is not None:
+            node.b = self.process(node.b)
+
+        if not self._pre_order:
+            node = self.do_process(node)
+
+        return node
 
     def do_process(self, node):
         processor_name = 'process_{}'.format(node.op)
@@ -196,6 +227,15 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
         if processors:
             self.slot(*processors)
 
+    def _validate_slot(self, slot):
+        pre_order = None
+        for p in slot['processors']:
+            if pre_order is None:
+                pre_order = p._pre_order
+            if pre_order != p._pre_order:
+                raise RuntimeError('Processors of incompatible pre/post order traversals in one slot')
+        slot['pre_order'] = pre_order
+
     def slot(self, *processors):
         """
         Registers a collection of processors that will be run "in parallel" after
@@ -204,7 +244,9 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
         self._all_slots.append({
             'strict': False,
             'processors': processors,
+            'pre_order': None,
         })
+        self._validate_slot(self._all_slots[-1])
         return self
 
     def strict_slot(self, *processors):
@@ -215,7 +257,9 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
         self._all_slots.append({
             'strict': True,
             'processors': processors,
+            'pre_order': None,
         })
+        self._validate_slot(self._all_slots[-1])
         return self
 
     @property
@@ -232,11 +276,16 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
         """
         recognised = False
         for p in self._current_slot['processors']:
-            # If node reaches the default process_unrecognised(), node.x.recognised will be reset to False
-            # and we'll know that this processor hasn't recognised it.
-            node.x.recognised = True
-            node = getattr(p, method_name)(node)
-            recognised = recognised or node.x.recognised
+            if not isinstance(node, PtNode):
+                # Primitives are considered recognised
+                recognised = True
+                node = getattr(p, self.process_primitive.__name__)(node)
+            else:
+                # If node reaches the default process_unrecognised(), node.x.recognised will be reset to False
+                # and we'll know that this processor hasn't recognised it.
+                node.x.recognised = True
+                node = getattr(p, method_name)(node)
+                recognised = recognised or node.x.recognised
 
         if self._current_slot['strict'] and not recognised:
             raise PtNodeNotRecognised(node=node)
@@ -251,7 +300,8 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
         if isinstance(node, tuple):
             node = PtNode(node)
 
-        assert isinstance(node, PtNode)
+        if not isinstance(node, PtNode):
+            raise RuntimeError('Did not expect here anything but PtNode instances, got {} instead'.format(node))
 
         assert node.x.is_root is None
         node.x.is_root = True
@@ -259,11 +309,15 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
 
         self._current_slot_index = 0
         while self._current_slot_index < len(self._all_slots):
+            if self._current_slot['pre_order']:
+                node = self._process_in_current_slot(self.do_process.__name__, node)
 
             node.a = self._process_in_current_slot(self.process.__name__, node.a)
             if node.b is not None:
                 node.b = self._process_in_current_slot(self.process.__name__, node.b)
-            node = self._process_in_current_slot(self.do_process.__name__, node)
+
+            if not self._current_slot['pre_order']:
+                node = self._process_in_current_slot(self.do_process.__name__, node)
 
             self._current_slot_index += 1
 
@@ -278,3 +332,15 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
     def process_unrecognised(self, node):
         raise RuntimeError('Do not call this')
 
+
+class ParseTreeInspector(ParseTreeProcessor):
+    pre_order = True
+    strict = True
+    def process_unrecognised(self, node):
+        node.x.print_indent = node.x.print_indent or 0
+        node.mark_operands(print_indent=node.x.print_indent + 2)
+        if node.is_leaf:
+            print (' ' * node.x.print_indent), node.op, node.operands, '\t', node.x
+        else:
+            print (' ' * node.x.print_indent), node.op
+        return node

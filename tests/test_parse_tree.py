@@ -2,7 +2,7 @@ import copy
 
 import pytest
 
-from shreducers.parse_tree import ParseTreeMultiProcessor, ParseTreeProcessor, PtNode, PtNodeNotRecognised
+from shreducer.parse_tree import ParseTreeMultiProcessor, ParseTreeProcessor, PtNode, PtNodeNotRecognised
 
 
 @pytest.fixture

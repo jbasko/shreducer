@@ -1,6 +1,6 @@
-from shreducers import tokenizers
-from shreducers.parser import ShiftReduceParser
-from shreducers.tokenizers import BOF, BOF_VALUE, EOF, EOF_VALUE
+from shreducer import tokenizers
+from shreducer.parser import ShiftReduceParser
+from shreducer.tokenizers import BOF, BOF_VALUE, EOF, EOF_VALUE
 
 
 class GrammarMeta(type):

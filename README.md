@@ -1,4 +1,4 @@
-# Shreducers
+# shreducer
 
 Simple compilers in Python for fun and profit.
 
@@ -35,7 +35,7 @@ All these components together make a compiler.
     
 ## Implementing a New Grammar
 
-See examples in `shreducers/examples/`:
+See examples in `shreducer/examples/`:
 
  * `DictG` - simplest of all grammars, the most suitable to understand the basic idea, parser produces parsed dictionary
  * `ListG` - another simple grammar, but unlike dictionary grammar, parser for this one produces parse tree

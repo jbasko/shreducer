@@ -1,4 +1,4 @@
-from shreducers.examples.grammars.better_arithmetics import BetterArithmeticsG
+from shreducer.examples.grammars.better_arithmetics import BetterArithmeticsG
 
 _p = BetterArithmeticsG.parse
 _s = BetterArithmeticsG.simple_parse

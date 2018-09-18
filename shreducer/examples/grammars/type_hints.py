@@ -1,7 +1,7 @@
 import string
 
-from shreducers.grammar import Grammar
-from shreducers.tokenizers import create_shlex_tokenizer
+from shreducer.grammar import Grammar
+from shreducer.tokenizers import create_shlex_tokenizer
 
 
 class TypeHintsG(Grammar):

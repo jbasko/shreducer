@@ -1,6 +1,6 @@
-from shreducers import tokenizers
-from shreducers.parser import ShiftReduceParser
-from shreducers.tokenizers import BOF_VALUE, EOF_VALUE
+from shreducer import tokenizers
+from shreducer.parser import ShiftReduceParser
+from shreducer.tokenizers import BOF_VALUE, EOF_VALUE
 
 
 def test_basic_tokenizer_yields_token_and_lookahead():

@@ -1,6 +1,6 @@
 import pytest
 
-from shreducers.examples.grammars.better_filters import BetterFiltersG
+from shreducer.examples.grammars.better_filters import BetterFiltersG
 
 s = BetterFiltersG.simple_parse
 

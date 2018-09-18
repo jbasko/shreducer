@@ -1,6 +1,6 @@
 import operator
 
-from shreducers.generators import Generator
+from shreducer.generators import Generator
 
 
 class ArithmeticGenerator(Generator):

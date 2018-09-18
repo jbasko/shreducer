@@ -1,4 +1,4 @@
-from shreducers.grammar import Grammar
+from shreducer.grammar import Grammar
 
 
 def test_grammar_t_members_are_names_of_token_types():

@@ -13,14 +13,14 @@ def read(fname):
 
 
 setup(
-    name='shreducers',
-    version=read('shreducers/__init__.py').split('\n')[0].split('=', 1)[1].strip().strip('"'),
+    name='shreducer',
+    version=read('shreducer/__init__.py').split('\n')[0].split('=', 1)[1].strip().strip('"'),
     author='Jazeps Basko',
     author_email='jazeps.basko@gmail.com',
     maintainer='Jazeps Basko',
     maintainer_email='jazeps.basko@gmail.com',
     license='MIT',
-    url='https://github.com/jbasko/shreducers',
+    url='https://github.com/jbasko/shreducer',
     description='Grammars, parsers, and compilers in Python 3.6+',
     long_description=read('README.md'),
     packages=find_packages("."),

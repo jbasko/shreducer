@@ -1,8 +1,8 @@
 import string
 
-from shreducers import tokenizers
-from shreducers.grammar import Grammar
-from shreducers.tokenizers import BOF, EOF
+from shreducer import tokenizers
+from shreducer.grammar import Grammar
+from shreducer.tokenizers import BOF, EOF
 
 
 class BetterArithmeticsG(Grammar):

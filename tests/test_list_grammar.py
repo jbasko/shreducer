@@ -1,4 +1,4 @@
-from shreducers.examples.grammars.list_grammar import ListG
+from shreducer.examples.grammars.list_grammar import ListG
 
 s = ListG.simple_parse
 

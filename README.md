@@ -2,12 +2,16 @@
 
 Simple compilers in Python for fun and profit.
 
-## Most Useful Thing in This Project
+## Grammars Included in This Project
 
-The most useful part of this project is the filter expressions parser.
-You can use it to enable advanced filtering in your APIs with queries like this:
+* Python 3.6+ type hints string representation
+* Filter expressions for web APIs. Allows parsing of expressions like this:
 
-    https://your.api?filter=(status eq open and type eq store) or (status eq closed and type not in office, garage)
+    `https://your.api?filter=(status eq open and type eq store) or (status eq closed and type not in office, garage)`
+  
+  * With a compiler of Elasticsearch queries included (not tested since 2016)
+
+* A couple of primitive grammars for basic arithmetic expressions as examples
 
 ## Components
 
@@ -56,3 +60,34 @@ Similarly, `MyGrammar.t.PLUS_MINUS` will be `"PLUS_MINUS"`, and `MyGrammar.t.EXP
 Member of `class t` with value `None` is treated as the default token type.
 
 Members of `class t` with value `()` are treated as names of tokens of higher order -- expressions.
+
+## Testing Your New Grammar
+
+If you implement just a grammar, you can try parsing input strings with `Grammar.simple_parse` (which is a class
+method).
+
+For example, to try `TypeHintsG` (grammar for parsing type hints string representation in Python 3.6+),
+you can do:
+
+    print(TypeHintsG.simple_parse('typing.Union[typing.List[str], typing.Dict[str, int]]'))
+
+This will produce the following parse tree:
+
+    {
+        "name": "typing.Union",
+        "args": [
+            {
+                "name": "typing.List",
+                "args": [
+                    {"name": "str", "args": None},
+                ],
+            },
+            {
+                "name": "typing.Dict",
+                "args": [
+                    {"name": "str", "args": None},
+                    {"name": "int", "args": None},
+                ],
+            },
+        ],
+    }

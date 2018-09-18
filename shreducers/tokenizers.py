@@ -35,4 +35,3 @@ def create_shlex_tokenizer(with_eof=False, with_bof=False, **settings):
         if with_eof:
             yield EOF_VALUE
     return custom_tokenizer
-

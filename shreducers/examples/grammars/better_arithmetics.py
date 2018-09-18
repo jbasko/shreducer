@@ -2,7 +2,7 @@ import string
 
 from shreducers import tokenizers
 from shreducers.grammar import Grammar
-from shreducers.tokenizers import EOF, BOF
+from shreducers.tokenizers import BOF, EOF
 
 
 class BetterArithmeticsG(Grammar):

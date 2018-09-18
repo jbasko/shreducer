@@ -1,6 +1,6 @@
 from shreducers import tokenizers
 from shreducers.parser import ShiftReduceParser
-from shreducers.tokenizers import EOF, EOF_VALUE, BOF_VALUE, BOF
+from shreducers.tokenizers import BOF, BOF_VALUE, EOF, EOF_VALUE
 
 
 class GrammarMeta(type):
@@ -76,8 +76,10 @@ class Grammar(object, metaclass=GrammarMeta):
             return values[1]
         elif len(types) == 2 and len(values) == 2 and (types[1], values[1]) == (EOF, EOF_VALUE):
             return values[0]
-        elif len(types) == 3 and len(values) == 3 and (types[0], values[0], types[2], values[2]) == (BOF, BOF_VALUE, EOF, EOF_VALUE):
+        elif (
+            len(types) == 3 and len(values) == 3 and
+            (types[0], values[0], types[2], values[2]) == (BOF, BOF_VALUE, EOF, EOF_VALUE)
+        ):
             return values[1]
         else:
             raise RuntimeError('Parsing failed: {}, {}'.format(types, values))
-

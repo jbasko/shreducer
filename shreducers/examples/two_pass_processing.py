@@ -9,7 +9,7 @@ Create collection in root node's x and hold on to that.
 Note that there is no state in processors. All the state is stored on the nodes.
 """
 from shreducers.examples.grammars.better_filters import BetterFiltersG
-from shreducers.parse_tree import ParseTreeMultiProcessor, ParseTreeInspector
+from shreducers.parse_tree import ParseTreeInspector, ParseTreeMultiProcessor
 
 
 def compile(input_str):
@@ -51,5 +51,6 @@ def compile(input_str):
         .slot(contacts_post_processor)
         .slot(ParseTreeInspector())
     ).process(parse_tree)
+
 
 compile('(type eq main and contacts.name eq "JB") or (contacts.name ne "JB" and type eq other)')

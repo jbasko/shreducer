@@ -142,7 +142,7 @@ class ParseTreeProcessor(object):
             return func
 
     def __new__(cls, *args, **kwargs):
-        instance = super(ParseTreeProcessor, cls).__new__(cls, *args, **kwargs)
+        instance = super().__new__(cls)
         for k, v in cls.__dict__.items():
             if v and callable(v) and hasattr(v, 'delegate_of'):
                 for d in v.delegate_of:

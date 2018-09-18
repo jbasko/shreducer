@@ -34,7 +34,7 @@ class GrammarMeta(type):
                 default_token_type = token_type
 
             # Replace token_type value with the string so it can be used as a constant
-            dct['t'].__dict__[token_type] = token_type
+            setattr(dct['t'], token_type, token_type)
 
         dct['_token_type_lookup'] = token_type_lookup
         dct['_default_token_type'] = default_token_type

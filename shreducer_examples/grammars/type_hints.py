@@ -1,6 +1,6 @@
 import string
 
-from shreducer.grammar import Grammar
+from shreducer import Grammar
 from shreducer.tokenizers import create_shlex_tokenizer
 
 

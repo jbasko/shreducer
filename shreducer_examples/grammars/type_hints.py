@@ -8,7 +8,7 @@ class TypeHintsG(Grammar):
     """
     Grammar for string representation of type hints in Python 3.6+
 
-    Just a few examples of valid input strings:
+    Just a few shreducer_examples of valid input strings:
 
      - "str"
      - "typing.List"

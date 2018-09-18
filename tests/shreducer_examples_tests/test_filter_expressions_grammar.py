@@ -1,6 +1,6 @@
 import pytest
 
-from shreducer.examples.grammars.filter_expressions import FilterExpressionsG
+from shreducer_examples.grammars.filter_expressions import FilterExpressionsG
 
 s = FilterExpressionsG.simple_parse
 

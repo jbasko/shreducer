@@ -8,8 +8,8 @@ Create collection in root node's x and hold on to that.
 
 Note that there is no state in processors. All the state is stored on the nodes.
 """
-from shreducer.examples.grammars.better_filters import BetterFiltersG
 from shreducer.parse_tree import ParseTreeInspector, ParseTreeMultiProcessor
+from shreducer_examples import BetterFiltersG
 
 
 def compile(input_str):

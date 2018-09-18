@@ -1,5 +1,5 @@
-from shreducer.examples.generators.arithmetic import ArithmeticGenerator
-from shreducer.examples.grammars.plus_minus_arithmetics import PlusMinusArithmeticsG
+from shreducer_examples.generators.arithmetic import ArithmeticGenerator
+from shreducer_examples.grammars.plus_minus_arithmetics import PlusMinusArithmeticsG
 
 
 def e(input_str):

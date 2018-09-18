@@ -58,23 +58,29 @@ class BetterArithmeticsG(Grammar):
         ]
 
     @classmethod
-    def product_expr(cls, types, (a, op, b)):
+    def product_expr(cls, types, xxx_todo_changeme):
+        (a, op, b) = xxx_todo_changeme
         return [cls.t.PRODUCT], [(op, a, b)]
 
     @classmethod
-    def product_at_eof(cls, types, (a, eof)):
+    def product_at_eof(cls, types, xxx_todo_changeme1):
+        (a, eof) = xxx_todo_changeme1
         return [cls.t.PRODUCT, types[1]], [a, eof]
 
     @classmethod
-    def product_expr_at_eof(cls, types, (a, op, b, eof)):
+    def product_expr_at_eof(cls, types, xxx_todo_changeme2):
+        (a, op, b, eof) = xxx_todo_changeme2
         return [cls.t.PRODUCT, types[3]], [(op, a, b), eof]
 
     @classmethod
-    def remove_parens(cls, types, (p1, x, p2)):
+    def remove_parens(cls, types, xxx_todo_changeme3):
+        (p1, x, p2) = xxx_todo_changeme3
         return [types[1]], [x]
 
     @classmethod
-    def negation_at_bof(cls, (bof_type, op_type, a_type), (bof, op, a)):
+    def negation_at_bof(cls, xxx_todo_changeme4, xxx_todo_changeme5):
+        (bof_type, op_type, a_type) = xxx_todo_changeme4
+        (bof, op, a) = xxx_todo_changeme5
         if a_type == cls.t.IDENT:
             sign = op if op == '-' else ''
             return [bof_type, a_type], [bof, '{}{}'.format(sign, a)]

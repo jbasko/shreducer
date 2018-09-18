@@ -34,7 +34,7 @@ def compile(input_str):
     def contacts_post_processor(node):
         if node.x.is_root:
             # Do the lookups
-            for k, v in node.x.foreign_lookups.iteritems():
+            for k, v in node.x.foreign_lookups.items():
                 node.x.foreign_lookups[k] = '<looked-up-value-of-{}>'.format(v)
 
         # Dummy replacement

@@ -6,8 +6,8 @@ class ShiftReduceParser(object):
         self.tokenizer = tokenizer or self.grammar.get_default_tokenizer()
 
     def _print_state(self, type_stack, value_stack):
-        print '\t', type_stack
-        print '\t', value_stack
+        print('\t', type_stack)
+        print('\t', value_stack)
 
     @classmethod
     def tokenize_with_lookahead(cls, tokenizer, input_str):
@@ -35,12 +35,12 @@ class ShiftReduceParser(object):
             type_stack.append(t)
             value_stack.append(v)
             if debug:
-                print 'Shifted'
+                print('Shifted')
                 self._print_state(type_stack, value_stack)
             self.apply_reducers(type_stack, value_stack, lookahead_type=lookahead_type, debug=debug)
 
         if debug:
-            print 'Completed'
+            print('Completed')
             self._print_state(type_stack, value_stack)
 
         return type_stack, value_stack
@@ -65,6 +65,6 @@ class ShiftReduceParser(object):
                 type_stack[x], value_stack[x] = rule_reducer(type_stack[x], value_stack[x])
                 reducer_applied = True
                 if debug:
-                    print 'Reduced'
+                    print('Reduced')
                     self._print_state(type_stack, value_stack)
                 break

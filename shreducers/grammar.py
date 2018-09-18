@@ -15,7 +15,7 @@ class GrammarMeta(type):
         if 't' not in dct:
             raise RuntimeError('Grammar class {} declaration is missing inner class "t"'.format(name))
 
-        for token_type, token_type_values in dct['t'].__dict__.iteritems():
+        for token_type, token_type_values in dct['t'].__dict__.items():
             if token_type.startswith('_') or token_type.upper() != token_type:
                 continue
 
@@ -34,7 +34,7 @@ class GrammarMeta(type):
                 default_token_type = token_type
 
             # Replace token_type value with the string so it can be used as a constant
-            dct['t'].__dict__[token_type] = token_type
+            setattr(dct['t'], token_type, token_type)
 
         dct['_token_type_lookup'] = token_type_lookup
         dct['_default_token_type'] = default_token_type
@@ -42,9 +42,7 @@ class GrammarMeta(type):
         return super(GrammarMeta, meta).__new__(meta, name, bases, dct)
 
 
-class Grammar(object):
-    __metaclass__ = GrammarMeta
-
+class Grammar(object, metaclass=GrammarMeta):
     class t:
         pass
 

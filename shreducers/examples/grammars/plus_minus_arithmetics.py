@@ -39,14 +39,18 @@ class PlusMinusArithmeticsG(Grammar):
         ]
 
     @classmethod
-    def binary_expr(cls, types, (a, op, b)):
+    def binary_expr(cls, types, xxx_todo_changeme):
+        (a, op, b) = xxx_todo_changeme
         return [cls.t.EXPR], [(op, a, b)]
 
     @classmethod
-    def remove_parens(cls, (t1, x_type, t2), (p1, x_value, p2)):
+    def remove_parens(cls, xxx_todo_changeme1, xxx_todo_changeme2):
+        (t1, x_type, t2) = xxx_todo_changeme1
+        (p1, x_value, p2) = xxx_todo_changeme2
         return [x_type], [x_value]
 
     @classmethod
-    def negation(cls, types, (_, a)):
+    def negation(cls, types, xxx_todo_changeme3):
         # -1 is effectively "0 - 1"
+        (_, a) = xxx_todo_changeme3
         return [cls.t.EXPR], [('-', '0', a)]

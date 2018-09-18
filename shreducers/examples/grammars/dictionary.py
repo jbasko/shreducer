@@ -16,9 +16,11 @@ class DictG(Grammar):
         ]
 
     @classmethod
-    def create_dictionary(cls, types, (key, colon, value)):
+    def create_dictionary(cls, types, xxx_todo_changeme):
+        (key, colon, value) = xxx_todo_changeme
         return [cls.t.DICT], [{key: value}]
 
     @classmethod
-    def update_dictionary(cls, types, (dict1, comma, dict2)):
+    def update_dictionary(cls, types, xxx_todo_changeme1):
+        (dict1, comma, dict2) = xxx_todo_changeme1
         return [cls.t.DICT], [dict(dict1, **dict2)]

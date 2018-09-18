@@ -26,18 +26,22 @@ class ListG(Grammar):
         ]
 
     @classmethod
-    def begin_list(cls, types, (a, comma)):
+    def begin_list(cls, types, xxx_todo_changeme):
+        (a, comma) = xxx_todo_changeme
         return [cls.t.LIST, cls.t.COMMA], [('list', [a]), comma]
 
     @classmethod
-    def append_to_list(cls, types, (head, comma, a)):
+    def append_to_list(cls, types, xxx_todo_changeme1):
+        (head, comma, a) = xxx_todo_changeme1
         head[1].append(a)
         return [cls.t.LIST], [head]
 
     @classmethod
-    def remove_parens(cls, types, (p1, a, p2)):
+    def remove_parens(cls, types, xxx_todo_changeme2):
+        (p1, a, p2) = xxx_todo_changeme2
         return [cls.t.DONE], [a]
 
     @classmethod
-    def single_item_list(cls, types, (p1, a, p2)):
+    def single_item_list(cls, types, xxx_todo_changeme3):
+        (p1, a, p2) = xxx_todo_changeme3
         return [cls.t.DONE], [('list', [a])]

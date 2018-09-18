@@ -28,7 +28,7 @@ def create_shlex_tokenizer(with_eof=False, with_bof=False, **settings):
         tokenizer = shlex.shlex(input_str)
         if with_bof:
             yield BOF_VALUE
-        for k, v in settings.iteritems():
+        for k, v in settings.items():
             setattr(tokenizer, k, v)
         for t in tokenizer:
             yield t

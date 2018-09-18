@@ -1,7 +1,7 @@
 import string
 
-from shreducers.grammar import Grammar
-from shreducers.tokenizers import create_shlex_tokenizer
+from shreducer.grammar import Grammar
+from shreducer.tokenizers import create_shlex_tokenizer
 
 
 class TypeHintsG(Grammar):
@@ -44,10 +44,22 @@ class TypeHintsG(Grammar):
 
         """
         return [
-            ([cls.t.IDENT], cls.create_primitive_type_def),
-            ([cls.t.TYPE_DEF, cls.t.BRACKETS_CLOSE], cls.create_args_list_items),
-            ([cls.t.TYPE_DEF, cls.t.COMMA, cls.t.ARGS_LIST_ITEMS, cls.t.BRACKETS_CLOSE], cls.prepend_to_args_list_items),
-            ([cls.t.TYPE_DEF, cls.t.BRACKETS_OPEN, cls.t.ARGS_LIST_ITEMS, cls.t.BRACKETS_CLOSE], cls.create_composite_type_def),
+            (
+                [cls.t.IDENT],
+                cls.create_primitive_type_def,
+            ),
+            (
+                [cls.t.TYPE_DEF, cls.t.BRACKETS_CLOSE],
+                cls.create_args_list_items
+            ),
+            (
+                [cls.t.TYPE_DEF, cls.t.COMMA, cls.t.ARGS_LIST_ITEMS, cls.t.BRACKETS_CLOSE],
+                cls.prepend_to_args_list_items
+            ),
+            (
+                [cls.t.TYPE_DEF, cls.t.BRACKETS_OPEN, cls.t.ARGS_LIST_ITEMS, cls.t.BRACKETS_CLOSE],
+                cls.create_composite_type_def
+            ),
         ]
 
     @classmethod

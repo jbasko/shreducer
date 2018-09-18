@@ -1,3 +1,6 @@
 -r main.txt
+flake8
+isort
 pytest
 pytest-random-order
+

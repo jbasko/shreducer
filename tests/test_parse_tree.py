@@ -2,7 +2,7 @@ import copy
 
 import pytest
 
-from shreducers.parse_tree import PtNode, ParseTreeProcessor, ParseTreeMultiProcessor, PtNodeNotRecognised
+from shreducer.parse_tree import ParseTreeMultiProcessor, ParseTreeProcessor, PtNode, PtNodeNotRecognised
 
 
 @pytest.fixture
@@ -237,8 +237,10 @@ def test_multi_processor_application_order():
 
 def test_strict_parse_tree_processor_raises_exception_on_unrecognised_nodes():
     class MyProcessor(ParseTreeProcessor):
+
         def process_or(self, node):
             return node
+
         def process_eq(self, node):
             return node
 
@@ -279,6 +281,7 @@ def test_strict_multi_processor_raises_exception_if_none_of_same_slot_processors
 def test_pre_order_processor_can_calculate_node_depth_in_one_pass(parse_tree):
     class DepthMarker(ParseTreeProcessor):
         pre_order = True
+
         def process_unrecognised(self, node):
             node.x.depth = node.x.depth or 0
             node.mark_operands(depth=node.x.depth + 1)
@@ -313,6 +316,7 @@ def test_multi_processor_does_not_accept_post_and_pre_order_mix_in_one_slot():
 def test_multi_processor_supports_pre_order(parse_tree):
     class DepthMarker(ParseTreeProcessor):
         pre_order = True
+
         def process_unrecognised(self, node):
             node.x.depth = node.x.depth or 0
             node.mark_operands(depth=node.x.depth + 1)

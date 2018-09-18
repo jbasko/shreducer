@@ -1,4 +1,4 @@
-from shreducers.grammar import Grammar
+from shreducer.grammar import Grammar
 
 
 class FilterExpressionsG(Grammar):

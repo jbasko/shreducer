@@ -3,10 +3,10 @@ An example how to go about implementing expressions compiler to use with elastic
 """
 
 from elasticsearch import Elasticsearch
-from elasticsearch_dsl import Search as es_dsl_Search, Q, F
-
-from shreducers.examples.grammars.better_filters import BetterFiltersG
-from shreducers.parse_tree import ParseTreeProcessor, ParseTreeMultiProcessor
+from elasticsearch_dsl import F
+from elasticsearch_dsl import Search as es_dsl_Search
+from shreducer.examples.grammars.better_filters import BetterFiltersG
+from shreducer.parse_tree import ParseTreeMultiProcessor, ParseTreeProcessor
 
 
 class EsDslFilterPreprocessor(ParseTreeProcessor):
@@ -60,7 +60,9 @@ class Search(es_dsl_Search):
         return self.filter(self._filter_expr_compiler.compile(input_str))
 
 
-s = Search(using=client, index='things').filter_expr('status in open, temporarily_closed or status ne closed and type eq local')
+s = Search(
+    using=client, index='things',
+).filter_expr('status in open, temporarily_closed or status ne closed and type eq local')
 print(s.to_dict())
 for hit in s.execute():
     print(hit.meta.score, hit.name, hit.type)

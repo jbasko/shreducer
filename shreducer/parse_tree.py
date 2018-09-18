@@ -350,6 +350,7 @@ class ParseTreeMultiProcessor(ParseTreeProcessor):
 class ParseTreeInspector(ParseTreeProcessor):
     pre_order = True
     strict = True
+
     def process_unrecognised(self, node):
         node.x.print_indent = node.x.print_indent or 0
         node.mark_operands(print_indent=node.x.print_indent + 2)

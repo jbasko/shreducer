@@ -1,5 +1,4 @@
-from shreducers.examples.grammars.dictionary import DictG
-
+from shreducer.examples.grammars.dictionary import DictG
 
 s = DictG.simple_parse
 

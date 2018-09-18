@@ -56,7 +56,7 @@ def test_tokenizer_with_bof_and_eof_yields_token_and_lookahead():
 
     tokens = list(ShiftReduceParser.tokenize_with_lookahead(tokenizer, 'a b c'))
     assert len(tokens) == 5
-    print tokens
+    print(tokens)
     assert tokens[0] == (BOF_VALUE, 'a')
     assert tokens[1] == ('a', 'b')
     assert tokens[2] == ('b', 'c')

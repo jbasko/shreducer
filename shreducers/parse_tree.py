@@ -35,7 +35,7 @@ class PtNode(object):
                 if len(args) > i:
                     setattr(self, '_' + k, args[i])
 
-        for k, v in kwargs.iteritems():
+        for k, v in kwargs.items():
             setattr(self, '_' + k, v)
 
     @property
@@ -143,7 +143,7 @@ class ParseTreeProcessor(object):
 
     def __new__(cls, *args, **kwargs):
         instance = super(ParseTreeProcessor, cls).__new__(cls, *args, **kwargs)
-        for k, v in cls.__dict__.iteritems():
+        for k, v in cls.__dict__.items():
             if v and callable(v) and hasattr(v, 'delegate_of'):
                 for d in v.delegate_of:
                     # Must assign the bounded method of instance, not that of the class
@@ -354,7 +354,7 @@ class ParseTreeInspector(ParseTreeProcessor):
         node.x.print_indent = node.x.print_indent or 0
         node.mark_operands(print_indent=node.x.print_indent + 2)
         if node.is_leaf:
-            print '{:50} {}'.format((' ' * node.x.print_indent) + node.op + ' ' + str(node.operands), node.x)
+            print('{:50} {}'.format((' ' * node.x.print_indent) + node.op + ' ' + str(node.operands), node.x))
         else:
-            print '{:50} {}'.format((' ' * node.x.print_indent) + node.op, node.x)
+            print('{:50} {}'.format((' ' * node.x.print_indent) + node.op, node.x))
         return node

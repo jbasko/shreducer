@@ -61,6 +61,6 @@ class Search(es_dsl_Search):
 
 
 s = Search(using=client, index='things').filter_expr('status in open, temporarily_closed or status ne closed and type eq local')
-print s.to_dict()
+print(s.to_dict())
 for hit in s.execute():
-    print hit.meta.score, hit.name, hit.type
+    print(hit.meta.score, hit.name, hit.type)

@@ -32,26 +32,32 @@ class FilterExpressionsG(Grammar):
         ]
 
     @classmethod
-    def binary_expr(cls, types, (a, op, b)):
+    def binary_expr(cls, types, xxx_todo_changeme):
+        (a, op, b) = xxx_todo_changeme
         return [cls.t.EXPR], [(op, a, b)]
 
     @classmethod
-    def remove_parens(cls, types, (p1, expr, p2)):
+    def remove_parens(cls, types, xxx_todo_changeme1):
+        (p1, expr, p2) = xxx_todo_changeme1
         return [cls.t.EXPR], [expr]
 
     @classmethod
-    def neg_expr(cls, types, (neg, a)):
+    def neg_expr(cls, types, xxx_todo_changeme2):
+        (neg, a) = xxx_todo_changeme2
         return [cls.t.EXPR], [('not', a)]
 
     @classmethod
-    def start_list_expr(cls, types, (comma, a, p)):
+    def start_list_expr(cls, types, xxx_todo_changeme3):
+        (comma, a, p) = xxx_todo_changeme3
         return [cls.t.COMMA, cls.t.LIST], [comma, ('list', [a])]
 
     @classmethod
-    def continue_list_expr(cls, types, (a, comma, lst)):
+    def continue_list_expr(cls, types, xxx_todo_changeme4):
+        (a, comma, lst) = xxx_todo_changeme4
         lst[1].insert(0, a)
         return [cls.t.LIST], [lst]
 
     @classmethod
-    def finish_list_expr(cls, types, (p, lst)):
+    def finish_list_expr(cls, types, xxx_todo_changeme5):
+        (p, lst) = xxx_todo_changeme5
         return [cls.t.LIST], [lst]

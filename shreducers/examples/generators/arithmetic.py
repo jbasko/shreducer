@@ -12,7 +12,7 @@ class ArithmeticGenerator(Generator):
         '+': operator.add,
         '-': operator.sub,
         '*': operator.mul,
-        '/': operator.div,
+        '/': operator.truediv,
     }
 
     def run(cls, tree):
@@ -31,7 +31,7 @@ class ArithmeticGenerator(Generator):
             else:
                 raise ValueError('Unexpected syntax tree element: {}'.format(tree))
 
-        elif isinstance(tree, basestring):
+        elif isinstance(tree, str):
             float_val = float(tree)
             if '.' not in tree:
                 return int(tree)

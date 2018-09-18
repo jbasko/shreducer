@@ -61,42 +61,54 @@ class BetterFiltersG(Grammar):
         yield ([cls.t.PARENS_OPEN, cls.t.EXPR, cls.t.PARENS_CLOSE], cls.remove_expr_parens)
 
     @classmethod
-    def begin_list(cls, types, (a, comma)):
+    def begin_list(cls, types, xxx_todo_changeme):
+        (a, comma) = xxx_todo_changeme
         return [cls.t.LIST, cls.t.COMMA], [('list', [a]), comma]
 
     @classmethod
-    def append_to_list(cls, types, (head, comma, a)):
+    def append_to_list(cls, types, xxx_todo_changeme1):
+        (head, comma, a) = xxx_todo_changeme1
         head[1].append(a)
         return [cls.t.LIST], [head]
 
     @classmethod
-    def remove_list_parens(cls, types, (p1, a, p2)):
+    def remove_list_parens(cls, types, xxx_todo_changeme2):
+        (p1, a, p2) = xxx_todo_changeme2
         return [cls.t.DONE], [a]
 
     @classmethod
-    def single_item_list(cls, types, (p1, a, p2)):
+    def single_item_list(cls, types, xxx_todo_changeme3):
+        (p1, a, p2) = xxx_todo_changeme3
         return [cls.t.DONE], [('list', [a])]
 
     @classmethod
-    def done(cls, (a_type, ), (a, )):
+    def done(cls, xxx_todo_changeme4, xxx_todo_changeme5):
+        (a_type, ) = xxx_todo_changeme4
+        (a, ) = xxx_todo_changeme5
         return [cls.t.DONE], [a]
 
     @classmethod
-    def comparison(cls, types, (a, op, b)):
+    def comparison(cls, types, xxx_todo_changeme6):
+        (a, op, b) = xxx_todo_changeme6
         return [cls.t.EXPR], [(op, a, b)]
 
     @classmethod
-    def inverted_negation(cls, (a_type, neg_type, op_type), (a, neg, op)):
+    def inverted_negation(cls, xxx_todo_changeme7, xxx_todo_changeme8):
+        (a_type, neg_type, op_type) = xxx_todo_changeme7
+        (a, neg, op) = xxx_todo_changeme8
         return [neg_type, a_type, op_type], [neg, a, op]
 
     @classmethod
-    def negation(cls, types, (neg, a)):
+    def negation(cls, types, xxx_todo_changeme9):
+        (neg, a) = xxx_todo_changeme9
         return [cls.t.EXPR], [(neg, a)]
 
     @classmethod
-    def binary_logical_expr(cls, types, (expr1, op, expr2)):
+    def binary_logical_expr(cls, types, xxx_todo_changeme10):
+        (expr1, op, expr2) = xxx_todo_changeme10
         return [cls.t.EXPR], [(op, expr1, expr2)]
 
     @classmethod
-    def remove_expr_parens(cls, types, (p1, expr, p2)):
+    def remove_expr_parens(cls, types, xxx_todo_changeme11):
+        (p1, expr, p2) = xxx_todo_changeme11
         return [cls.t.EXPR], [expr]

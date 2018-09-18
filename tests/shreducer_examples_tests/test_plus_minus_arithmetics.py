@@ -1,4 +1,4 @@
-from shreducer.examples.grammars.plus_minus_arithmetics import PlusMinusArithmeticsG
+from shreducer_examples.grammars.plus_minus_arithmetics import PlusMinusArithmeticsG
 
 _p = PlusMinusArithmeticsG.parse
 _s = PlusMinusArithmeticsG.simple_parse

@@ -23,7 +23,7 @@ setup(
     url='https://github.com/jbasko/shreducer',
     description='Grammars, parsers, and compilers in Python 3.6+',
     long_description=read('README.md'),
-    packages=find_packages("."),
+    packages=find_packages(".", exclude=["tests"]),
     install_requires=[],
     classifiers=[
         'Development Status :: 4 - Beta',

@@ -1,6 +1,6 @@
 import pytest
 
-from shreducer.examples.grammars.type_hints import TypeHintsG
+from shreducer_examples.grammars.type_hints import TypeHintsG
 
 s = TypeHintsG.simple_parse
 

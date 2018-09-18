@@ -5,8 +5,8 @@ An example how to go about implementing expressions compiler to use with elastic
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import F
 from elasticsearch_dsl import Search as es_dsl_Search
-from shreducer.examples.grammars.better_filters import BetterFiltersG
 from shreducer.parse_tree import ParseTreeMultiProcessor, ParseTreeProcessor
+from shreducer_examples import BetterFiltersG
 
 
 class EsDslFilterPreprocessor(ParseTreeProcessor):

@@ -22,7 +22,7 @@ setup(
     license='MIT',
     url='https://github.com/jbasko/shreducer',
     description='Grammars, parsers, and compilers in Python 3.6+',
-    long_description=read('README.md'),
+    long_description=read('README.rst'),
     packages=find_packages(".", exclude=["tests"]),
     install_requires=[],
     classifiers=[
